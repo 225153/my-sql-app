@@ -1,0 +1,6 @@
+/* You can add global styles to this file, and also import other style files */
+
+body { background-color: #f4f6f9; font-family: 'Segoe UI', system-ui, sans-serif; }
+.btn { transition: all 0.3s ease; }
+.btn:hover { transform: translateY(-1px); }
+.card { border-radius: 12px; overflow: hidden; }
