@@ -1,0 +1,12 @@
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Note: Subdirectories "gestion-formatio" (Spring Boot) and "gestion_formation_angular" (Angular) 
+# each contain their own .gitignore files which handle Node modules, Maven targets, build outputs, etc.

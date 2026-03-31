@@ -1,0 +1,89 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { DomaineService } from '../services/domaine.service';
+import { Domaine } from '../models/domaine.model';
+
+@Component({
+  selector: 'app-domaines',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  template: `
+    <div class="card mt-4">
+      <div class="card-header bg-primary text-white">
+        <h5>Gestion des Domaines</h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-6 d-flex">
+            <input type="text" class="form-control" placeholder="Nouveau domaine (ex: Informatique)" [(ngModel)]="nouveauDomaine.libelle">
+            <button class="btn btn-success ms-2" (click)="ajouterDomaine()" [disabled]="!nouveauDomaine.libelle">Créer</button>
+          </div>
+        </div>
+        
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Libellé</th>
+              <th style="width: 15%">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let d of domaines">
+              <td>{{ d.id }}</td>
+              <td>{{ d.libelle }}</td>
+              <td>
+                <button class="btn btn-danger btn-sm" (click)="supprimerDomaine(d.id!)">Supprimer</button>
+              </td>
+            </tr>
+            <tr *ngIf="domaines.length === 0">
+              <td colspan="3" class="text-center">Aucun domaine trouvé</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `
+})
+export class DomainesComponent implements OnInit {
+  domaines: Domaine[] = [];
+  nouveauDomaine: Domaine = { libelle: '' };
+
+  constructor(private domaineService: DomaineService) {}
+
+  ngOnInit(): void {
+    this.chargerDomaines();
+  }
+
+  chargerDomaines(): void {
+    this.domaineService.getAll().subscribe({
+      next: (data) => this.domaines = data,
+      error: (e) => console.error(e)
+    });
+  }
+
+  ajouterDomaine(): void {
+    if (this.nouveauDomaine.libelle) {
+      this.domaineService.create(this.nouveauDomaine).subscribe({
+        next: (res) => {
+          this.domaines.push(res);
+          this.nouveauDomaine = { libelle: '' };
+        },
+        error: (e) => console.error(e)
+      });
+    }
+  }
+
+  supprimerDomaine(id: number): void {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce domaine ?')) {
+      this.domaineService.delete(id).subscribe({
+        next: () => {
+          this.domaines = this.domaines.filter(d => d.id !== id);
+        },
+        error: (e) => console.error(e)
+      });
+    }
+  }
+}
+
