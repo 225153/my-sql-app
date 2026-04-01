@@ -7,22 +7,28 @@ import com.formation.gestion_formatio.service.ParticipantService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Contrôleur REST pour la gestion des Formations (API Backend).
- * Le @RestController indique à Spring Boot que cette classe va intercepter des
- * requêtes Web et retourner les données en format JSON.
+ * ContrÃ´leur REST pour la gestion des Formations (API Backend).
+ * Le @RestController
+ * @PreAuthorize("hasAnyRole('ADMIN', 'USER')") indique Ã  Spring Boot que cette
+ * classe va intercepter des
+ * requÃªtes Web et retourner les donnÃ©es en format JSON.
  * 
- * @RequestMapping définit la route racine de base de l'URL pour ce contrôleur
+ * @RequestMapping dÃ©finit la route racine de base de l'URL pour ce contrÃ´leur
  *                 (ex: http://localhost:8080/api/formations).
- * @CrossOrigin autorise spécifiquement l'interface locale Angular (port 4200) à
- *              communiquer avec ce serveur sans déclencher l'erreur de sécurité
+ * @CrossOrigin autorise spÃ©cifiquement l'interface locale Angular (port 4200)
+ *              Ã 
+ *              communiquer avec ce serveur sans dÃ©clencher l'erreur de
+ *              sÃ©curitÃ©
  *              CORS.
  */
 @RestController
+@PreAuthorize("hasAnyRole('ADMIN', 'USER', 'RESPONSABLE')")
 @RequestMapping("/api/formations")
 @CrossOrigin(origins = "http://localhost:4200")
 public class FormationController {
@@ -31,10 +37,10 @@ public class FormationController {
     private final ParticipantService participantService;
 
     /**
-     * L'injection des dépendances (les Services métier) par le constructeur.
-     * C'est une bonne pratique de Spring (inversion de contrôle) qui initialise
+     * L'injection des dÃ©pendances (les Services mÃ©tier) par le constructeur.
+     * C'est une bonne pratique de Spring (inversion de contrÃ´le) qui initialise
      * automatiquement ces objets
-     * pour qu'on puisse appeler leurs méthodes sans faire de `new`.
+     * pour qu'on puisse appeler leurs mÃ©thodes sans faire de `new`.
      */
     public FormationController(FormationService formationService, ParticipantService participantService) {
         this.formationService = formationService;
@@ -42,9 +48,9 @@ public class FormationController {
     }
 
     /**
-     * Endpoint (Point d'accès) GET global.
+     * Endpoint (Point d'accÃ¨s) GET global.
      * Accessible via GET -> /api/formations
-     * Rôle : Renvoie la liste complète de toutes les formations existant en BDD.
+     * RÃ´le : Renvoie la liste complÃ¨te de toutes les formations existant en BDD.
      */
     @GetMapping
     public ResponseEntity<List<Formation>> getAll() {
@@ -52,25 +58,25 @@ public class FormationController {
     }
 
     /**
-     * Endpoint GET ciblé.
-     * Le paramètre {id} dans l'URL est capturé dynamiquement par le @PathVariable
-     * de la méthode.
-     * Exemple : GET -> /api/formations/3 remontera la formation dont la clé
+     * Endpoint GET ciblÃ©.
+     * Le paramÃ¨tre {id} dans l'URL est capturÃ© dynamiquement par le @PathVariable
+     * de la mÃ©thode.
+     * Exemple : GET -> /api/formations/3 remontera la formation dont la clÃ©
      * primaire est 3.
      */
     @GetMapping("/{id}")
     public ResponseEntity<Formation> getById(@PathVariable Long id) {
         return formationService.findById(id)
-                .map(ResponseEntity::ok) // Si trouvé, repond "200 OK" avec la donnée.
+                .map(ResponseEntity::ok) // Si trouvÃ©, repond "200 OK" avec la donnÃ©e.
                 .orElse(ResponseEntity.notFound().build()); // Sinon, code "404 Not Found"
     }
 
     /**
-     * Endpoint POST (Création).
+     * Endpoint POST (CrÃ©ation).
      * 
-     * @RequestBody exige que les données venant d'Angular soient dans le corps de
-     *              la requête HTTP.
-     * @Valid déclenche la vérification des contraintes sur l'objet Formation (par
+     * @RequestBody exige que les donnÃ©es venant d'Angular soient dans le corps de
+     *              la requÃªte HTTP.
+     * @Valid dÃ©clenche la vÃ©rification des contraintes sur l'objet Formation (par
      *        ex, champs non nuls).
      */
     @PostMapping
@@ -80,14 +86,15 @@ public class FormationController {
 
     /**
      * Endpoint PUT (Modification).
-     * On cherche l'élément par son ID. S'il existe on écrase ses données par les
+     * On cherche l'Ã©lÃ©ment par son ID. S'il existe on Ã©crase ses donnÃ©es par
+     * les
      * nouvelles et on sauvegarde.
      */
     @PutMapping("/{id}")
     public ResponseEntity<Formation> update(@PathVariable Long id, @Valid @RequestBody Formation formationDetails) {
         return formationService.findById(id)
                 .map(existing -> {
-                    formationDetails.setId(existing.getId()); // Garde la même clé primaire.
+                    formationDetails.setId(existing.getId()); // Garde la mÃªme clÃ© primaire.
                     return ResponseEntity.ok(formationService.save(formationDetails));
                 })
                 .orElse(ResponseEntity.notFound().build());
@@ -95,8 +102,8 @@ public class FormationController {
 
     /**
      * Endpoint DELETE (Suppression).
-     * Supprime physiquement l'enregistrement de la base de données après
-     * vérification de son existence.
+     * Supprime physiquement l'enregistrement de la base de donnÃ©es aprÃ¨s
+     * vÃ©rification de son existence.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
@@ -108,9 +115,9 @@ public class FormationController {
     }
 
     /**
-     * Action Spécifique (Association Many-To-Many) : POST.
-     * Permet à Angular d'affecter ou "Inscrire" un étudiant (Participant) à une
-     * Formation précise.
+     * Action SpÃ©cifique (Association Many-To-Many) : POST.
+     * Permet Ã  Angular d'affecter ou "Inscrire" un Ã©tudiant (Participant) Ã  une
+     * Formation prÃ©cise.
      * L'URL requiert les deux ID.
      */
     @PostMapping("/{id}/participants/{participantId}")
@@ -118,20 +125,20 @@ public class FormationController {
         Optional<Formation> formationOpt = formationService.findById(id);
         Optional<Participant> participantOpt = participantService.findById(participantId);
 
-        // Si l'élève et la formation existent bien tous les deux.
+        // Si l'Ã©lÃ¨ve et la formation existent bien tous les deux.
         if (formationOpt.isPresent() && participantOpt.isPresent()) {
             Formation formation = formationOpt.get();
-            formation.getParticipants().add(participantOpt.get()); // Ajoute à la liste persistante Java/Hibernate
+            formation.getParticipants().add(participantOpt.get()); // Ajoute Ã  la liste persistante Java/Hibernate
             return ResponseEntity.ok(formationService.save(formation)); // Valide la transaction vers la BDD
         }
         return ResponseEntity.notFound().build();
     }
 
     /**
-     * Action Spécifique (Désassociation) : DELETE.
-     * Retire un participant d'une session de formation. Concrètement, cette action
+     * Action SpÃ©cifique (DÃ©sassociation) : DELETE.
+     * Retire un participant d'une session de formation. ConcrÃ¨tement, cette action
      * supprime
-     * seulement la "liaison" sans supprimer définitivement l'élève pour autant.
+     * seulement la "liaison" sans supprimer dÃ©finitivement l'Ã©lÃ¨ve pour autant.
      */
     @DeleteMapping("/{id}/participants/{participantId}")
     public ResponseEntity<Formation> removeParticipant(@PathVariable Long id, @PathVariable Long participantId) {
@@ -140,7 +147,7 @@ public class FormationController {
 
         if (formationOpt.isPresent() && participantOpt.isPresent()) {
             Formation formation = formationOpt.get();
-            // Retire l'objet Participant de la collection gérée par l'entité Formation.
+            // Retire l'objet Participant de la collection gÃ©rÃ©e par l'entitÃ© Formation.
             formation.getParticipants().remove(participantOpt.get());
             return ResponseEntity.ok(formationService.save(formation));
         }

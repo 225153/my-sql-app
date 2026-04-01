@@ -5,10 +5,12 @@ import com.formation.gestion_formatio.service.DomaineService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/api/domaines")
 @CrossOrigin(origins = "http://localhost:4200")
 public class DomaineController {
@@ -55,3 +57,4 @@ public class DomaineController {
         return ResponseEntity.ok().build();
     }
 }
+

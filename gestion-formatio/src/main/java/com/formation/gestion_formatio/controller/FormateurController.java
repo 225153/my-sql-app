@@ -5,20 +5,22 @@ import com.formation.gestion_formatio.service.FormateurService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
 /**
- * Le Contrôleur qui expose les routes CRUD (Create, Read, Update, Delete) pour
- * l'entité Formateur.
- * Il interagit avec le front-end via les requêtes HTTP JSON.
+ * Le ContrÃ´leur qui expose les routes CRUD (Create, Read, Update, Delete) pour
+ * l'entitÃ© Formateur.
+ * Il interagit avec le front-end via les requÃªtes HTTP JSON.
  */
 @RestController
+@PreAuthorize("hasAnyRole('ADMIN', 'USER', 'RESPONSABLE')")
 @RequestMapping("/api/formateurs")
-@CrossOrigin(origins = "http://localhost:4200") // Limite les accès externes seulement à l'application Angular.
+@CrossOrigin(origins = "http://localhost:4200") // Limite les accÃ¨s externes seulement Ã  l'application Angular.
 public class FormateurController {
 
-    // Injection du service contenant la logique métier des Formateurs.
+    // Injection du service contenant la logique mÃ©tier des Formateurs.
     private final FormateurService service;
 
     public FormateurController(FormateurService service) {
@@ -26,7 +28,7 @@ public class FormateurController {
     }
 
     /**
-     * Renvoie la liste de tous les formateurs enregistrés.
+     * Renvoie la liste de tous les formateurs enregistrÃ©s.
      */
     @GetMapping
     public ResponseEntity<List<Formateur>> getAll() {
@@ -34,7 +36,8 @@ public class FormateurController {
     }
 
     /**
-     * Récupère un formateur selon son ID. Renvoie une erreur 404 s'il n'existe pas.
+     * RÃ©cupÃ¨re un formateur selon son ID. Renvoie une erreur 404 s'il n'existe
+     * pas.
      */
     @GetMapping("/{id}")
     public ResponseEntity<Formateur> getById(@PathVariable Long id) {
@@ -44,7 +47,7 @@ public class FormateurController {
     }
 
     /**
-     * Enregistre un nouveau formateur dans la base de données après validation
+     * Enregistre un nouveau formateur dans la base de donnÃ©es aprÃ¨s validation
      * (@Valid).
      */
     @PostMapping
@@ -53,9 +56,9 @@ public class FormateurController {
     }
 
     /**
-     * Met à jour les informations d'un formateur existant.
-     * Si l'ID est valide, on écrase son ancien contenu. Sinon on retourne 404 (non
-     * trouvé).
+     * Met Ã  jour les informations d'un formateur existant.
+     * Si l'ID est valide, on Ã©crase son ancien contenu. Sinon on retourne 404 (non
+     * trouvÃ©).
      */
     @PutMapping("/{id}")
     public ResponseEntity<Formateur> update(@PathVariable Long id, @Valid @RequestBody Formateur formateurDetails) {
@@ -68,7 +71,7 @@ public class FormateurController {
     }
 
     /**
-     * Efface un formateur de la base de données.
+     * Efface un formateur de la base de donnÃ©es.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

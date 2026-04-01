@@ -24,8 +24,6 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // 1. Créer le rôle ADMIN s'il n'existe pas
         Role adminRole;
-        // On cherche d'abord par nom (mais on n'a pas de findByNom, on va s'appuyer sur
-        // l'ID 1 ou on le crée)
         long adminRoleId = 1L;
         Optional<Role> roleOpt = roleRepository.findById(adminRoleId);
         if (roleOpt.isEmpty()) {
@@ -37,14 +35,41 @@ public class DataInitializer implements CommandLineRunner {
             adminRole = roleOpt.get();
         }
 
-        // 2. Créer l'utilisateur "admin" s'il n'existe pas
-        if (utilisateurRepository.findByLogin("admin").isEmpty()) {
+        // Créer le rôle RESPONSABLE s'il n'existe pas
+        Role respRole = roleRepository.findByNom("RESPONSABLE").orElseGet(() -> {
+            Role r = new Role();
+            r.setNom("RESPONSABLE");
+            return roleRepository.save(r);
+        });
+
+        // 2. Créer ou Mettre à jour l'utilisateur "admin"
+        Optional<Utilisateur> optAdmin = utilisateurRepository.findByLogin("admin");
+        if (optAdmin.isEmpty()) {
             Utilisateur adminUser = new Utilisateur();
             adminUser.setLogin("admin");
-            adminUser.setPassword("admin123"); // Plus tard, nous crypterons ceci
+            adminUser.setPassword("admin");
             adminUser.setRole(adminRole);
             utilisateurRepository.save(adminUser);
-            System.out.println("✅ Utilisateur 'admin' créé !");
+            System.out.println("✅ Utilisateur 'admin' créé avec mdp 'admin' !");
+        } else {
+            Utilisateur adminUser = optAdmin.get();
+            adminUser.setPassword("admin");
+            utilisateurRepository.save(adminUser);
+        }
+
+        // Créer ou Mettre à jour l'utilisateur "resp"
+        Optional<Utilisateur> optResp = utilisateurRepository.findByLogin("resp");
+        if (optResp.isEmpty()) {
+            Utilisateur respUser = new Utilisateur();
+            respUser.setLogin("resp");
+            respUser.setPassword("resp");
+            respUser.setRole(respRole);
+            utilisateurRepository.save(respUser);
+            System.out.println("✅ Utilisateur 'resp' créé avec mdp 'resp' !");
+        } else {
+            Utilisateur respUser = optResp.get();
+            respUser.setPassword("resp");
+            utilisateurRepository.save(respUser);
         }
     }
 }

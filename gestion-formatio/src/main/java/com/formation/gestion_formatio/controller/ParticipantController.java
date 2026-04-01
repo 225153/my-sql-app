@@ -5,21 +5,23 @@ import com.formation.gestion_formatio.service.ParticipantService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
 /**
- * Le Contrôleur qui expose les routes CRUD (Create, Read, Update, Delete) pour
- * l'entité Participant.
- * Il interagit avec le front-end via les requêtes HTTP JSON.
+ * Le ContrÃ´leur qui expose les routes CRUD (Create, Read, Update, Delete) pour
+ * l'entitÃ© Participant.
+ * Il interagit avec le front-end via les requÃªtes HTTP JSON.
  */
 @RestController
+@PreAuthorize("hasAnyRole('ADMIN', 'USER', 'RESPONSABLE')")
 @RequestMapping("/api/participants")
-@CrossOrigin(origins = "http://localhost:4200") // Limite les accès externes seulement à l'application Angular qui
+@CrossOrigin(origins = "http://localhost:4200") // Limite les accÃ¨s externes seulement Ã  l'application Angular qui
                                                 // tourne sur le port 4200.
 public class ParticipantController {
 
-    // Injection de dépendance du service traitant la logique métier des
+    // Injection de dÃ©pendance du service traitant la logique mÃ©tier des
     // Participants.
     private final ParticipantService service;
 
@@ -28,7 +30,7 @@ public class ParticipantController {
     }
 
     /**
-     * Fournit la collection complète des participants inscrits.
+     * Fournit la collection complÃ¨te des participants inscrits.
      */
     @GetMapping
     public ResponseEntity<List<Participant>> getAll() {
@@ -36,10 +38,11 @@ public class ParticipantController {
     }
 
     /**
-     * Cherche un identifiant précis en base de données.
-     * Si l'Optional retourné par le Service est plein, retourne le participant (200
+     * Cherche un identifiant prÃ©cis en base de donnÃ©es.
+     * Si l'Optional retournÃ© par le Service est plein, retourne le participant
+     * (200
      * OK).
-     * Sinon, retourne un code HTTP "404 Non Trouvé" pour signaler l'anomalie.
+     * Sinon, retourne un code HTTP "404 Non TrouvÃ©" pour signaler l'anomalie.
      */
     @GetMapping("/{id}")
     public ResponseEntity<Participant> getById(@PathVariable Long id) {
@@ -50,8 +53,8 @@ public class ParticipantController {
 
     /**
      * Sauvegarde un nouveau participant en base.
-     * L'annotation @Valid impose l'évaluation des règles @NotBlank et @Email
-     * écrites dans la classe Entité Participant.
+     * L'annotation @Valid impose l'Ã©valuation des rÃ¨gles @NotBlank et @Email
+     * Ã©crites dans la classe EntitÃ© Participant.
      */
     @PostMapping
     public ResponseEntity<Participant> create(@Valid @RequestBody Participant participant) {
@@ -60,8 +63,9 @@ public class ParticipantController {
 
     /**
      * Ecrase un ancien participant par de nouvelles informations.
-     * Pour s'assurer qu'on ne crée pas de doublon, on récupère l'identifiant pour
-     * l'assigner manuellement à l'objet avant la sauvegarde.
+     * Pour s'assurer qu'on ne crÃ©e pas de doublon, on rÃ©cupÃ¨re l'identifiant
+     * pour
+     * l'assigner manuellement Ã  l'objet avant la sauvegarde.
      */
     @PutMapping("/{id}")
     public ResponseEntity<Participant> update(@PathVariable Long id,
@@ -75,7 +79,7 @@ public class ParticipantController {
     }
 
     /**
-     * Supprime définitivement un participant suite à une vérification préalable
+     * Supprime dÃ©finitivement un participant suite Ã  une vÃ©rification prÃ©alable
      * d'existence.
      */
     @DeleteMapping("/{id}")

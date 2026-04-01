@@ -5,18 +5,20 @@ import com.formation.gestion_formatio.service.StructureService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
 /**
  * API REST Controller pour "Structure".
- * Il gère la réception des requêtes web (HTTP GET, POST, etc.) venant
+ * Il gÃ¨re la rÃ©ception des requÃªtes web (HTTP GET, POST, etc.) venant
  * d'Angular.
  */
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/api/structures")
-@CrossOrigin(origins = "http://localhost:4200") // Angular s'exécute sur le port 4200. Ceci l'autorise à lire l'API en
-                                                // évitant les erreurs CORS.
+@CrossOrigin(origins = "http://localhost:4200") // Angular s'exÃ©cute sur le port 4200. Ceci l'autorise Ã  lire l'API en
+                                                // Ã©vitant les erreurs CORS.
 public class StructureController {
 
     private final StructureService service;
@@ -26,7 +28,7 @@ public class StructureController {
     }
 
     /**
-     * Charge toutes les structures enregistrées
+     * Charge toutes les structures enregistrÃ©es
      */
     @GetMapping
     public ResponseEntity<List<Structure>> getAll() {
@@ -34,7 +36,7 @@ public class StructureController {
     }
 
     /**
-     * Appelle le service pour trouver un ID. Le .map vérifie le Null.
+     * Appelle le service pour trouver un ID. Le .map vÃ©rifie le Null.
      */
     @GetMapping("/{id}")
     public ResponseEntity<Structure> getById(@PathVariable Long id) {
@@ -44,7 +46,7 @@ public class StructureController {
     }
 
     /**
-     * Sauvegarde. La validation (@Valid) bloque toute tentative de création d'une
+     * Sauvegarde. La validation (@Valid) bloque toute tentative de crÃ©ation d'une
      * structure "vide"
      */
     @PostMapping
@@ -53,7 +55,7 @@ public class StructureController {
     }
 
     /**
-     * Met à jour en injectant l'existant ID dans les nouveaux paramètres avant
+     * Met Ã  jour en injectant l'existant ID dans les nouveaux paramÃ¨tres avant
      * persistance Jpa
      */
     @PutMapping("/{id}")
@@ -67,7 +69,7 @@ public class StructureController {
     }
 
     /**
-     * Requête de suppression de la table "Structure"
+     * RequÃªte de suppression de la table "Structure"
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
@@ -78,3 +80,4 @@ public class StructureController {
         return ResponseEntity.ok().build();
     }
 }
+

@@ -5,6 +5,7 @@ import com.formation.gestion_formatio.service.ProfilService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * s'inscrire correctement.
  */
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/api/profils")
 @CrossOrigin(origins = "http://localhost:4200") // Permet les appels depuis le FrontEnd qui tourne en serveur Web sur
                                                 // 4200.
@@ -26,7 +28,7 @@ public class ProfilController {
     }
 
     /**
-     * Renvoie la liste complète de tous les Profils en JSON
+     * Renvoie la liste complÃ¨te de tous les Profils en JSON
      */
     @GetMapping
     public ResponseEntity<List<Profil>> getAll() {
@@ -34,8 +36,8 @@ public class ProfilController {
     }
 
     /**
-     * Trouver un Profil unique via son clé primaire l'URL.
-     * Renvoie 404 en cas d'un nombre non attribué.
+     * Trouver un Profil unique via son clÃ© primaire l'URL.
+     * Renvoie 404 en cas d'un nombre non attribuÃ©.
      */
     @GetMapping("/{id}")
     public ResponseEntity<Profil> getById(@PathVariable Long id) {
@@ -45,7 +47,7 @@ public class ProfilController {
     }
 
     /**
-     * Enregistrement en POST après le mapping valide au format JSON
+     * Enregistrement en POST aprÃ¨s le mapping valide au format JSON
      */
     @PostMapping
     public ResponseEntity<Profil> create(@Valid @RequestBody Profil profil) {
@@ -78,3 +80,4 @@ public class ProfilController {
         return ResponseEntity.ok().build();
     }
 }
+

@@ -1,9 +1,10 @@
 package com.formation.gestion_formatio.controller;
 
+import com.formation.entity.Role;
 import com.formation.entity.Utilisateur;
+import com.formation.gestion_formatio.repository.RoleRepository;
 import com.formation.gestion_formatio.service.UtilisateurService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -16,9 +17,11 @@ import java.util.Optional;
 public class AuthController {
 
     private final UtilisateurService utilisateurService;
+    private final RoleRepository roleRepository;
 
-    public AuthController(UtilisateurService utilisateurService) {
+    public AuthController(UtilisateurService utilisateurService, RoleRepository roleRepository) {
         this.utilisateurService = utilisateurService;
+        this.roleRepository = roleRepository;
     }
 
     @PostMapping("/login")
@@ -28,11 +31,9 @@ public class AuthController {
 
         Optional<Utilisateur> userOpt = utilisateurService.findByLogin(login);
 
-        // Basic mock verification (replace with AuthenticationManager and JwtUtils
-        // later)
         if (userOpt.isPresent() && userOpt.get().getPassword().equals(password)) {
             Map<String, String> response = new HashMap<>();
-            response.put("token", "mock-jwt-token-replace-later"); // Replace with JWT generation
+            response.put("token", "mock-jwt-token-replace-later");
             return ResponseEntity.ok(response);
         }
 
@@ -40,10 +41,26 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> register(@RequestBody Utilisateur utilisateur) {
-        // Here you would typically encode the password before saving
-        Utilisateur savedUser = utilisateurService.save(utilisateur);
+    public ResponseEntity<?> register(@RequestBody Map<String, String> credentials) {
+        String login = credentials.get("login");
+        String password = credentials.get("password");
+
+        if (utilisateurService.findByLogin(login).isPresent()) {
+            return ResponseEntity.badRequest().body("Le nom d'utilisateur est déjà pris");
+        }
+
+        Role userRole = roleRepository.findByNom("USER").orElseGet(() -> {
+            Role r = new Role();
+            r.setNom("USER");
+            return roleRepository.save(r);
+        });
+
+        Utilisateur nvUtilisateur = new Utilisateur();
+        nvUtilisateur.setLogin(login);
+        nvUtilisateur.setPassword(password);
+        nvUtilisateur.setRole(userRole);
+
+        Utilisateur savedUser = utilisateurService.save(nvUtilisateur);
         return ResponseEntity.ok(savedUser);
     }
 }
