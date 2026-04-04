@@ -10,7 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @RestController
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyRole('ADMIN', 'USER', 'RESPONSABLE')")
 @RequestMapping("/api/domaines")
 @CrossOrigin(origins = "http://localhost:4200")
 public class DomaineController {
@@ -33,11 +33,13 @@ public class DomaineController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Domaine> create(@Valid @RequestBody Domaine domaine) {
         return ResponseEntity.ok(service.save(domaine));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Domaine> update(@PathVariable Long id, @Valid @RequestBody Domaine domaineDetails) {
         return service.findById(id)
@@ -48,6 +50,7 @@ public class DomaineController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!service.findById(id).isPresent()) {
@@ -57,4 +60,3 @@ public class DomaineController {
         return ResponseEntity.ok().build();
     }
 }
-

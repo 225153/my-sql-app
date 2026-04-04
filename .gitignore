@@ -10,3 +10,11 @@
 
 # Note: Subdirectories "gestion-formatio" (Spring Boot) and "gestion_formation_angular" (Angular) 
 # each contain their own .gitignore files which handle Node modules, Maven targets, build outputs, etc.
+
+# Root-level temporary/debug files
+debug.js
+debug_raw.js
+list_models.js
+list_models_v2.js
+current_domaines.txt
+*.log

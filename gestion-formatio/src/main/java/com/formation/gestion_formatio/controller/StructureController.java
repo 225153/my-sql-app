@@ -15,7 +15,7 @@ import java.util.List;
  * d'Angular.
  */
 @RestController
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyRole('ADMIN', 'USER', 'RESPONSABLE')")
 @RequestMapping("/api/structures")
 @CrossOrigin(origins = "http://localhost:4200") // Angular s'exÃ©cute sur le port 4200. Ceci l'autorise Ã  lire l'API en
                                                 // Ã©vitant les erreurs CORS.
@@ -49,6 +49,7 @@ public class StructureController {
      * Sauvegarde. La validation (@Valid) bloque toute tentative de crÃ©ation d'une
      * structure "vide"
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Structure> create(@Valid @RequestBody Structure structure) {
         return ResponseEntity.ok(service.save(structure));
@@ -58,6 +59,7 @@ public class StructureController {
      * Met Ã  jour en injectant l'existant ID dans les nouveaux paramÃ¨tres avant
      * persistance Jpa
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Structure> update(@PathVariable Long id, @Valid @RequestBody Structure structureDetails) {
         return service.findById(id)
@@ -71,6 +73,7 @@ public class StructureController {
     /**
      * RequÃªte de suppression de la table "Structure"
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!service.findById(id).isPresent()) {
@@ -80,4 +83,3 @@ public class StructureController {
         return ResponseEntity.ok().build();
     }
 }
-

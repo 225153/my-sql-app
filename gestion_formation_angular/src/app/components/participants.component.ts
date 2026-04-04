@@ -138,8 +138,14 @@ export class ParticipantsComponent implements OnInit {
   }   
 
   chargerSP() { 
-    this.sSrv.getAll().subscribe(d => this.structures = d); 
-    this.profSrv.getAll().subscribe(d => this.profils = d); 
+    this.sSrv.getAll().subscribe({
+      next: d => this.structures = d,
+      error: () => this.structures = [] // Silent fallback if no right
+    }); 
+    this.profSrv.getAll().subscribe({
+      next: d => this.profils = d,
+      error: () => this.profils = [] // Silent fallback if no right
+    }); 
   }
 
   /**

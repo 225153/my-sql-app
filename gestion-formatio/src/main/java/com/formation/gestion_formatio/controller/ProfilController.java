@@ -15,7 +15,7 @@ import java.util.List;
  * s'inscrire correctement.
  */
 @RestController
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyRole('ADMIN', 'USER', 'RESPONSABLE')")
 @RequestMapping("/api/profils")
 @CrossOrigin(origins = "http://localhost:4200") // Permet les appels depuis le FrontEnd qui tourne en serveur Web sur
                                                 // 4200.
@@ -49,6 +49,7 @@ public class ProfilController {
     /**
      * Enregistrement en POST aprÃ¨s le mapping valide au format JSON
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Profil> create(@Valid @RequestBody Profil profil) {
         return ResponseEntity.ok(service.save(profil));
@@ -58,6 +59,7 @@ public class ProfilController {
      * Edition manuelle du nom de profil (par exemple changer 'Developpeur' en
      * 'Manager IT').
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Profil> update(@PathVariable Long id, @Valid @RequestBody Profil profilDetails) {
         return service.findById(id)
@@ -71,6 +73,7 @@ public class ProfilController {
     /**
      * Retrait global de l'appellation Profil.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!service.findById(id).isPresent()) {
@@ -80,4 +83,3 @@ public class ProfilController {
         return ResponseEntity.ok().build();
     }
 }
-

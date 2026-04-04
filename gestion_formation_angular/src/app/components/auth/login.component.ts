@@ -28,15 +28,17 @@ import { AuthService } from '../../services/auth/auth.service';
 
               <div class="mb-2">
                 <label>Nom d'utilisateur <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" [(ngModel)]="username" placeholder="Saisir votre pseudo">
+                <input type="text" class="form-control" [(ngModel)]="username" placeholder="Saisir votre pseudo" (input)="errorMessage = ''">
+                <small class="text-muted" *ngIf="!username || username.length < 4">Min. 4 caractères, pas d'espaces</small>
               </div>
               <div class="mb-3">
                 <label>Mot de passe <span class="text-danger">*</span></label>
-                <input type="password" class="form-control" [(ngModel)]="password" placeholder="Saisir votre mot de passe">
+                <input type="password" class="form-control" [(ngModel)]="password" placeholder="Saisir votre mot de passe" (input)="errorMessage = ''">
+                <small class="text-muted" *ngIf="!password || password.length < 6">Min. 6 caractères, 1 Majuscule + 1 Chiffre</small>
               </div>
               <div class="d-grid gap-2">
-                <button class="btn btn-success" [title]="(!username || !password) ? 'Veuillez remplir tous les champs' : ''" [disabled]="!username || !password" (click)="customLogin()">Se connecter</button>
-                <button class="btn btn-outline-success" [title]="(!username || !password) ? 'Veuillez remplir tous les champs' : ''" [disabled]="!username || !password" (click)="customSignup()">Créer un compte</button>
+                <button class="btn btn-success" [title]="getFormErrorMessage(username, password)" [disabled]="isFormInvalid(username, password)" (click)="customLogin()">Se connecter</button>
+                <button class="btn btn-outline-success" [title]="getFormErrorMessage(username, password)" [disabled]="isFormInvalid(username, password)" (click)="customSignup()">Créer un compte</button>
               </div>
             </div>
           </div>
@@ -106,9 +108,37 @@ export class LoginComponent {
     private http: HttpClient
   ) {}
 
+  private validateInputs(username: string, password: string): string | null {
+    if (!username || username.trim().length < 4) {
+      return "Le nom d'utilisateur doit contenir au moins 4 caractères.";
+    }
+    if (username.includes(' ')) {
+      return "Le nom d'utilisateur ne doit pas contenir d'espaces.";
+    }
+    if (!password || password.length < 6) {
+      return "Le mot de passe doit contenir au moins 6 caractères.";
+    }
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    if (!hasUpperCase || !hasNumber) {
+      return "Le mot de passe doit contenir au moins une lettre majuscule et un chiffre.";
+    }
+    return null;
+  }
+
+  // Pour l'utilisation dans le template (accès public)
+  public isFormInvalid(u: string, p: string): boolean {
+    return this.validateInputs(u, p) !== null;
+  }
+
+  public getFormErrorMessage(u: string, p: string): string {
+    return this.validateInputs(u, p) || '';
+  }
+
   customLogin() {
-    if (!this.username || !this.password) {
-      this.errorMessage = "Veuillez remplir tous les champs.";
+    const error = this.validateInputs(this.username, this.password);
+    if (error) {
+      this.errorMessage = error;
       return;
     }
     
@@ -126,8 +156,9 @@ export class LoginComponent {
   }
 
   customSignup() {
-    if (!this.username || !this.password) {
-      this.errorMessage = "Veuillez remplir tous les champs pour vous inscrire.";
+    const error = this.validateInputs(this.username, this.password);
+    if (error) {
+      this.errorMessage = error;
       return;
     }
     

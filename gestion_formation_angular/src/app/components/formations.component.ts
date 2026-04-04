@@ -152,9 +152,10 @@ export class FormationsComponent implements OnInit {
   ngOnInit() { 
     this.chargerFormations(); 
     // On charge aussi les Domaines, Formateurs et Participants pour hydrater les listes déroulantes (<select>)
-    this.dSrv.getAll().subscribe(d => this.domaines = d); 
-    this.formSrv.getAll().subscribe(d => this.formateurs = d); 
-    this.pSrv.getAll().subscribe(p => this.participants = p); 
+    // Les catchError évitent les erreurs 403 visibles si l'utilisateur n'a pas les droits ADMIN
+    this.dSrv.getAll().subscribe({ next: d => this.domaines = d, error: () => this.domaines = [] }); 
+    this.formSrv.getAll().subscribe({ next: d => this.formateurs = d, error: () => this.formateurs = [] }); 
+    this.pSrv.getAll().subscribe({ next: p => this.participants = p, error: () => this.participants = [] }); 
   }
 
   /**
