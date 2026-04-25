@@ -41,6 +41,10 @@ Ce projet est organisé sous forme de "monorepo" contenant deux parties distinct
 
 Assurez-vous d'avoir Java (JDK 17 ou supérieur) installé. Vous n'avez pas besoin d'installer Maven, un "wrapper" est inclus.
 
+**Option Rapide (Windows) :** Double-cliquez sur `run-backend.bat` à la racine pour lancer le serveur immédiatement.
+
+**Option Manuelle :**
+
 ```bash
 cd gestion-formatio
 ./mvnw spring-boot:run

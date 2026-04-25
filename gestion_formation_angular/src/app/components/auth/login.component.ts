@@ -37,8 +37,8 @@ import { AuthService } from '../../services/auth/auth.service';
                 <small class="text-muted" *ngIf="!password || password.length < 6">Min. 6 caractères, 1 Majuscule + 1 Chiffre</small>
               </div>
               <div class="d-grid gap-2">
-                <button class="btn btn-success" [title]="getFormErrorMessage(username, password)" [disabled]="isFormInvalid(username, password)" (click)="customLogin()">Se connecter</button>
-                <button class="btn btn-outline-success" [title]="getFormErrorMessage(username, password)" [disabled]="isFormInvalid(username, password)" (click)="customSignup()">Créer un compte</button>
+                <button class="btn btn-success" [title]="(!username || !password) ? 'Veuillez remplir le nom et le mot de passe' : ''" [disabled]="!username || !password" (click)="customLogin()">Se connecter</button>
+                <button class="btn btn-outline-success" (click)="customSignup()">Créer un compte</button>
               </div>
             </div>
           </div>
@@ -136,9 +136,8 @@ export class LoginComponent {
   }
 
   customLogin() {
-    const error = this.validateInputs(this.username, this.password);
-    if (error) {
-      this.errorMessage = error;
+    if (!this.username || !this.password) {
+      this.errorMessage = "Veuillez remplir tous les champs.";
       return;
     }
     

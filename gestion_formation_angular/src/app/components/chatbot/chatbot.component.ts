@@ -68,7 +68,7 @@ export class ChatbotComponent implements AfterViewChecked {
   userInput = '';
   
   // Clé API injectée depuis l'environnement ou placeholder (sécurisé via .gitignore)
-  private API_KEY = 'AIzaSyCfb239GEhx-GzYDccNc75KXqYPbUnP6jQ'; 
+  private API_KEY = ''; 
   private genAI = new GoogleGenerativeAI(this.API_KEY);
   private model = this.genAI.getGenerativeModel({ model: "gemma-3-4b-it" }); // Utilisation de l'ID exact gemma-3-12b-it (modèle Instruction Tuned libre)
 
